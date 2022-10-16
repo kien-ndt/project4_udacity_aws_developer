@@ -24,3 +24,20 @@ export const getTodos = async (userId: string): Promise<TodoItem[]> => {
     }).promise();
     return results.Items as TodoItem[];
 }
+
+export const createTodo = async(todoItem: TodoItem): Promise<TodoItem> => {
+  logger.info(`Create a new todo item for user ${todoItem.userId}`)
+  await docClient.put({
+    TableName: TODOS_TABLE,
+    Item: todoItem
+  }).promise();
+  return todoItem;
+}
+
+export const deleteTodo =async (userId: string, todoId: string): Promise<void> => {
+  logger.info(`Delete todo item ${todoId} for user ${userId}`)
+  await docClient.delete({
+    TableName: TODOS_TABLE,
+    Key: { userId, todoId }
+  }).promise();
+}
