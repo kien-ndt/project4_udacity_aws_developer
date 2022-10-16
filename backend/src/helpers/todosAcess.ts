@@ -48,6 +48,22 @@ export const patchTodoAttachmentUrl = async (userId: string, todoId: string, att
   }).promise();
 }
 
+export const updateTodo = async (userId: string, todoId: string, todoItemUpdate: TodoUpdate): Promise<void> => {
+  logger.info(`Update a todo item ${todoId} for user ${userId}`)
+  await docClient.update({
+    TableName: TODOS_TABLE,
+    Key: { userId, todoId },
+    ConditionExpression: 'attribute_exists(todoId)',
+    UpdateExpression: 'set #todoName = :name, dueDate = :dueDate, done = :done',
+    ExpressionAttributeNames: { '#todoName': 'name' },
+    ExpressionAttributeValues: {
+      ':name': todoItemUpdate.name,
+      ':dueDate': todoItemUpdate.dueDate,
+      ':done': todoItemUpdate.done
+    }
+  }).promise();
+}
+
 export const deleteTodo =async (userId: string, todoId: string): Promise<void> => {
   logger.info(`Delete todo item ${todoId} for user ${userId}`)
   await docClient.delete({
