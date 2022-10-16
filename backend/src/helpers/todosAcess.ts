@@ -13,6 +13,7 @@ const logger = createLogger('TodosAccess')
 
 const TODOS_TABLE = process.env.TODOS_TABLE;
 const docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient()
+
 export const getTodos = async (userId: string): Promise<TodoItem[]> => {
     logger.info(`Get all todo items for user ${userId}`)
     const results = await docClient.query({
@@ -32,6 +33,19 @@ export const createTodo = async(todoItem: TodoItem): Promise<TodoItem> => {
     Item: todoItem
   }).promise();
   return todoItem;
+}
+
+export const patchTodoAttachmentUrl = async (userId: string, todoId: string, attachmentUrl: string): Promise<void> => {
+  logger.info(`Update todo item ${todoId}'s attachment url for user ${userId}`)
+  await docClient.update({
+    TableName: TODOS_TABLE,
+    Key: { userId, todoId },
+    ConditionExpression: 'attribute_exists(todoId)',
+    UpdateExpression: 'set attachmentUrl = :attachmentUrl',
+    ExpressionAttributeValues: {
+      ':attachmentUrl': attachmentUrl
+    }
+  }).promise();
 }
 
 export const deleteTodo =async (userId: string, todoId: string): Promise<void> => {

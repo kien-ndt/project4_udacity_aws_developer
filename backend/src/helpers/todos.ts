@@ -1,5 +1,5 @@
-import { getTodos, createTodo, deleteTodo } from './todosAcess'
-// import { AttachmentUtils } from './attachmentUtils';
+import { getTodos, createTodo, patchTodoAttachmentUrl, deleteTodo } from './todosAcess'
+import { createSignedUrl, getAttachmentUrl } from './attachmentUtils'
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
@@ -21,6 +21,12 @@ export const createTodoForUser = async (userId: string, item: CreateTodoRequest)
     createdAt: new Date().toISOString(),
     done: false
   });
+}
+
+export const createAttachmentPresignedUrl = async (userId: string, todoId: string): Promise<string>  => {
+  const uploadUrl = createSignedUrl(todoId);
+  await patchTodoAttachmentUrl(userId, todoId, getAttachmentUrl(todoId))
+  return uploadUrl;
 }
 
 export const deleteTodoForUser = async (userId: string, todoId: string): Promise<void> => {
