@@ -4,10 +4,12 @@
   "type": "object",
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "minLength": 4
     },
     "dueDate": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$"
     }
   },
   "required": [
